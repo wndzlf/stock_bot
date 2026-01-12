@@ -32,18 +32,33 @@ def summarize_news(news_items: list, ticker: str) -> str:
 
     prompt = f"""
     You are a professional stock market analyst writing for Korean retail investors.
-    Summarize the following recent news for '{ticker}' (Ginkgo Bioworks) into a concise X (Twitter) post in Korean.
+    Summarize the following recent news for '{ticker}' (깅코바이오웍스, Ginkgo Bioworks) into a concise X (Twitter) post in Korean.
     
-    Requirements:
-    1. Language: Korean (natural, easy to understand for retail investors).
-    2. Format: 
-       - Start with a catchy headline about the key trend
-       - 2-3 bullet points highlighting investment-relevant insights
-       - Focus on: partnerships, financial results, product developments, regulatory news
-    3. Currency: Convert all USD amounts to KRW (1 USD = 1,450 KRW). Show both: "약 X억원 ($Y million)"
-    4. Tone: Professional but accessible. Explain technical terms simply.
-    5. Length: STRICTLY under 10 lines.
-    6. Ending: Add hashtags #{ticker} #진코바이오웍스 #바이오주 #미국주식
+    CRITICAL Requirements:
+    1. Company Name: ALWAYS use "깅코바이오웍스" (NOT 진코바이오웍스)
+    
+    2. Source Attribution: 
+       - At the end, ALWAYS add "출처: [언론사명]" for each major news item
+       - Example: "출처: Bloomberg, Reuters"
+    
+    3. Currency & Financial Impact:
+       - Convert ALL USD amounts to KRW (1 USD = 1,450 KRW)
+       - Format: "약 X억원 (약 $Y million)"
+       - ALWAYS explain the financial impact: "이는 회사의 [매출/손실/투자] 측면에서 [긍정적/부정적] 영향을 미칠 것으로 예상됩니다"
+    
+    4. Format: 
+       - Catchy headline about the key trend
+       - 2-3 bullet points with investment insights
+       - Focus on: partnerships, financial results, products, regulatory news
+       - Include financial impact analysis for any monetary figures
+    
+    5. Tone: Professional but accessible for retail investors
+    
+    6. Length: STRICTLY under 10 lines
+    
+    7. Ending: 
+       - Source attribution line
+       - Hashtags: #{ticker} #깅코바이오웍스 #바이오주 #미국주식
     
     News Data (last 10 days):
     {news_text}
