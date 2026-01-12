@@ -52,12 +52,20 @@ def summarize_news(news_items: list, ticker: str) -> str:
         
         # Call the model
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.0-flash-exp',
             contents=prompt
         )
         return response.text
     except Exception as e:
         logger.error(f"Error generating summary: {e}")
+        try:
+            logger.info("Attempting to list available models due to error...")
+            # List available models to debug 404
+            for m in client.models.list(config={'limit': 20}):
+                logger.info(f"Available model: {m.name}")
+        except Exception as list_e:
+            logger.error(f"Failed to list models: {list_e}")
+
         return f"Error generating summary: {e}"
 
 if __name__ == "__main__":
