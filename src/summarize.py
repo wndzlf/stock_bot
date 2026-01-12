@@ -19,8 +19,8 @@ def summarize_news(news_items: list, ticker: str) -> str:
     """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        logger.error("GEMINI_API_KEY not found in environment variables.")
-        return "Error: API Key missing."
+        logger.error("환경 변수에서 GEMINI_API_KEY를 찾을 수 없습니다.")
+        return "오류: API 키가 없습니다."
 
     if not news_items:
         return f"오늘 {ticker} 관련 주요 뉴스가 없습니다."
@@ -75,7 +75,7 @@ def summarize_news(news_items: list, ticker: str) -> str:
         )
         return response.text
     except Exception as e:
-        logger.error(f"Error generating summary: {e}")
+        logger.error(f"요약 생성 오류: {e}")
         return f"Error generating summary: {e}"
 
 if __name__ == "__main__":

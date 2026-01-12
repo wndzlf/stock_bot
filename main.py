@@ -14,33 +14,33 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def main(ticker: str, dry_run: bool = False):
-    logger.info(f"Starting Stock News Bot for {ticker}...")
+    logger.info(f"{ticker} 주식 뉴스 봇을 시작합니다...")
     
     # 1. Fetch News
     news = fetch_stock_news(ticker)
     if not news:
-        logger.info("No news found to report.")
+        logger.info("보고할 뉴스가 없습니다.")
         return
 
     # 2. Summarize
     # Check if Gemini API key exists
     if not os.getenv("GEMINI_API_KEY"):
-        logger.error("GEMINI_API_KEY missing. Skipping summarization.")
+        logger.error("GEMINI_API_KEY가 없습니다. 요약을 건너뜁니다.")
         return
         
     summary = summarize_news(news, ticker)
-    logger.info("Summary generated:")
+    logger.info("요약 생성 완료:")
     print("-" * 40)
     print(summary)
     print("-" * 40)
 
     if summary.startswith("Error"):
-        logger.error("Summary generation failed. Skipping Twitter post.")
+        logger.error("요약 생성 실패. 트위터 포스팅을 건너뜁니다.")
         return
 
     # 3. Post to X
     if dry_run:
-        logger.info("Dry run enabled. Skipping Twitter post.")
+        logger.info("테스트 모드 활성화. 트위터 포스팅을 건너뜁니다.")
     else:
         post_to_x(summary)
 

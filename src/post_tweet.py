@@ -21,7 +21,7 @@ def post_to_x(content: str):
     bearer_token = os.getenv("X_BEARER_TOKEN")
 
     if not all([consumer_key, consumer_secret, access_token, access_token_secret]):
-        logger.error("X API credentials missing. Please set X_CONSUMER_KEY, X_CONSUMER_SECRET, X_ACCESS_TOKEN, and X_ACCESS_TOKEN_SECRET.")
+        logger.error("X API 인증 정보가 없습니다. X_CONSUMER_KEY, X_CONSUMER_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET을 설정해주세요.")
         return
 
     try:
@@ -39,13 +39,13 @@ def post_to_x(content: str):
         # For now, we assume the summary fits or we let it fail if too long to warn the user.
         # A simple check:
         if len(content) > 280:
-             logger.warning("Content length exceeds 280 characters. Posting as much as possible or it might fail if not Premium.")
+             logger.warning("내용이 280자를 초과합니다. 프리미엄이 아닌 경우 실패할 수 있습니다.")
         
         response = client.create_tweet(text=content)
-        logger.info(f"Tweet posted successfully! ID: {response.data['id']}")
+        logger.info(f"트윗 포스팅 성공! ID: {response.data['id']}")
         
     except tweepy.TweepyException as e:
-        logger.error(f"Error posting tweet: {e}")
+        logger.error(f"트윗 포스팅 오류: {e}")
 
 if __name__ == "__main__":
     # Test stub

@@ -28,11 +28,11 @@ def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 240) -> list:
         # The summarizer will translate it anyway.
         rss_url = f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
         
-        logger.info(f"Fetching RSS: {rss_url}")
+        logger.info(f"RSS 가져오는 중: {rss_url}")
         feed = feedparser.parse(rss_url)
         
         if not feed.entries:
-            logger.info(f"No RSS entries found for {ticker_symbol}")
+            logger.info(f"{ticker_symbol}에 대한 RSS 항목을 찾을 수 없습니다")
             return []
             
         filtered_news = []
@@ -51,11 +51,11 @@ def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 240) -> list:
                         'published_at': pub_dt.strftime('%Y-%m-%d %H:%M:%S')
                     })
         
-        logger.info(f"Found {len(filtered_news)} items for {ticker_symbol} in the last {lookback_hours} hours via Google News.")
+        logger.info(f"Google News에서 {ticker_symbol}의 최근 {lookback_hours}시간 내 뉴스 {len(filtered_news)}개를 찾았습니다.")
         return filtered_news
 
     except Exception as e:
-        logger.error(f"Error fetching news for {ticker_symbol}: {e}")
+        logger.error(f"{ticker_symbol} 뉴스 가져오기 오류: {e}")
         return []
 
 if __name__ == "__main__":
