@@ -2,8 +2,8 @@ name: Daily Stock News Post
 
 on:
   schedule:
-    # Runs at 00:00 UTC every day (9:00 AM KST)
-    - cron: '0 0 * * *'
+    # Runs at 15:00 UTC every day (00:00 AM KST = midnight)
+    - cron: '0 15 * * *'
   workflow_dispatch:  # Allows manual run from GitHub UI
 
 jobs:
