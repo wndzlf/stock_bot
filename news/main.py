@@ -3,9 +3,9 @@ import argparse
 import logging
 from dotenv import load_dotenv
 
-from src.fetch_news import fetch_stock_news
-from src.summarize import summarize_news
 from src.post_tweet import post_to_x
+from news.src.fetch_news import fetch_stock_news
+from news.src.summarize import summarize_news
 
 # Load environment variables from .env file for local development
 load_dotenv()
