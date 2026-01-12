@@ -1,7 +1,11 @@
 import os
+import sys
 import argparse
 import logging
 from dotenv import load_dotenv
+
+# Add project root to path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.post_tweet import post_to_x
 from xPosting.src.fetch_tweets import fetch_ginkgo_tweets
