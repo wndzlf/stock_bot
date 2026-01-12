@@ -48,7 +48,8 @@ def fetch_ginkgo_tweets(lookback_hours: int = 24) -> list:
         
         # Build search query
         # Search for Ginkgo-related keywords from expert accounts
-        keywords = "(Ginkgo OR \"Ginkgo Bioworks\" OR $DNA OR synbio)"
+        # Note: $DNA (cashtag) not supported in Basic tier
+        keywords = "(Ginkgo OR \"Ginkgo Bioworks\" OR DNA OR synbio)"
         accounts_query = " OR ".join([f"from:{acc}" for acc in EXPERT_ACCOUNTS])
         query = f"{keywords} ({accounts_query}) -is:retweet"
         
