@@ -52,7 +52,7 @@ def summarize_news(news_items: list, ticker: str) -> str:
         
         # Call the model
         response = client.models.generate_content(
-            model='gemini-1.5-flash-001',
+            model='gemini-2.5-flash',
             contents=prompt
         )
         return response.text
