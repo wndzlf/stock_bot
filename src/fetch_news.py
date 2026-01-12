@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 24) -> list:
+def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 72) -> list:
     """
     Fetches news for a given stock ticker using yfinance.
     
