@@ -1,5 +1,5 @@
 yfinance
-openai
+google-genai
 tweepy
 python-dotenv
 requests
