@@ -18,61 +18,80 @@ def fetch_ginkgo_blog(lookback_hours: int = 168) -> list:
         list: List of press release dictionaries.
     """
     try:
-        url = "https://investors.ginkgobioworks.com/news-releases"
+        url = "https://investors.ginkgobioworks.com/news/default.aspx"
         
         logger.info(f"Ginkgo IR 보도자료 페이지 스크래핑 중: {url}")
         
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9,ko;q=0.8',
+            'Referer': 'https://investors.ginkgobioworks.com/',
+            'Connection': 'keep-alive'
         }
-        response = requests.get(url, headers=headers, timeout=10)
+        
+        response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
         
         soup = BeautifulSoup(response.content, 'html.parser')
         
-        # Find press release items (structure may vary, adjust selectors as needed)
-        # Common patterns: article tags, div with class containing 'news' or 'release'
-        press_releases = []
-        
-        # Try to find news items (adjust selector based on actual page structure)
-        news_items = soup.find_all('article', limit=10) or \
-                     soup.find_all('div', class_=lambda x: x and ('news' in x.lower() or 'release' in x.lower()), limit=10)
+        # Identified selectors from browser analysis
+        news_items = soup.select('.module_item')
         
         if not news_items:
-            # Fallback: try finding links in main content
-            news_items = soup.find_all('a', href=lambda x: x and 'news' in x.lower(), limit=10)
+            logger.warning("뉴스 항목(.module_item)을 찾을 수 없습니다. 페이지 구조 확인 필요.")
+            return []
         
+        press_releases = []
         cutoff_time = datetime.utcnow() - timedelta(hours=lookback_hours)
         
-        for item in news_items[:5]:  # Process top 5
+        for item in news_items:
             try:
-                # Extract title
-                title_elem = item.find('h2') or item.find('h3') or item.find('a') or item
-                title = title_elem.get_text(strip=True) if title_elem else "No title"
+                # Extract Headline Link
+                link_elem = item.select_one('.module_headline-link')
+                if not link_elem:
+                    continue
                 
-                # Extract link
-                link_elem = item.find('a', href=True)
-                link = link_elem['href'] if link_elem else url
+                # Title typically in <h4> or the link text itself
+                title_elem = link_elem.find('h4') or link_elem
+                title = title_elem.get_text(strip=True)
+                
+                # Link handling
+                link = link_elem['href']
                 if link and not link.startswith('http'):
                     link = f"https://investors.ginkgobioworks.com{link}"
                 
-                # Extract summary/description
-                summary_elem = item.find('p') or item.find('div', class_=lambda x: x and 'summary' in x.lower())
-                summary = summary_elem.get_text(strip=True)[:500] if summary_elem else title
+                # Date extraction
+                date_elem = item.select_one('.module_date-text')
+                date_str = date_elem.get_text(strip=True) if date_elem else ""
                 
-                press_releases.append({
-                    'title': title,
-                    'summary': summary,
-                    'link': link,
-                    'published_at': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-                    'source': 'Ginkgo Investor Relations'
-                })
+                # Parse date (Format: Jan 12, 2024)
+                # If parsing fails, use current time but keep original string
+                pub_date = datetime.utcnow()
+                try:
+                    if date_str:
+                        pub_date = datetime.strptime(date_str, "%b %d, %Y")
+                except:
+                    pass
+                
+                if pub_date >= cutoff_time:
+                    press_releases.append({
+                        'title': title,
+                        'summary': f"발표일: {date_str}\n{title}",
+                        'link': link,
+                        'published_at': pub_date.strftime('%Y-%m-%d %H:%M:%S'),
+                        'source': 'Ginkgo Investor Relations'
+                    })
+                
+                if len(press_releases) >= 3:
+                    break
+                    
             except Exception as e:
-                logger.warning(f"보도자료 항목 파싱 오류: {e}")
+                logger.warning(f"항목 파싱 중 오류: {e}")
                 continue
         
         logger.info(f"Ginkgo IR 보도자료 {len(press_releases)}개를 찾았습니다.")
-        return press_releases[:3]  # Return top 3
+        return press_releases
         
     except Exception as e:
         logger.error(f"Ginkgo IR 페이지 스크래핑 오류: {e}")
