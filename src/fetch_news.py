@@ -8,13 +8,13 @@ from time import mktime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 24) -> list:
+def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 240) -> list:
     """
     Fetches news for a given stock ticker using Google News RSS.
     
     Args:
         ticker_symbol (str): The stock ticker (e.g., "DNA").
-        lookback_hours (int): How many hours back to filter news for.
+        lookback_hours (int): How many hours back to filter news for (default: 240 = 10 days).
         
     Returns:
         list: A list of dictionaries containing news metadata.

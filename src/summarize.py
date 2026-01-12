@@ -31,18 +31,21 @@ def summarize_news(news_items: list, ticker: str) -> str:
         news_text += f"{idx+1}. {item['title']} (Source: {item['publisher']})\n"
 
     prompt = f"""
-    You are a professional stock market news assistant.
-    Your task is to summarize the following recent news for the stock '{ticker}' into a concise post for X (Twitter) in Korean.
+    You are a professional stock market analyst writing for Korean retail investors.
+    Summarize the following recent news for '{ticker}' (Ginkgo Bioworks) into a concise X (Twitter) post in Korean.
     
     Requirements:
-    1. Language: Korean.
-    2. Format: Headline followed by 3-4 bullet points max.
-    3. Currency: Convert USD to KRW (approx 1 USD = 1,450 KRW).
-    4. Tone: Professional, informative, and concise.
-    5. Length: STRICTLY under 10 lines of text.
-    6. Ending: Add hashtags like #{ticker} #주식.
+    1. Language: Korean (natural, easy to understand for retail investors).
+    2. Format: 
+       - Start with a catchy headline about the key trend
+       - 2-3 bullet points highlighting investment-relevant insights
+       - Focus on: partnerships, financial results, product developments, regulatory news
+    3. Currency: Convert all USD amounts to KRW (1 USD = 1,450 KRW). Show both: "약 X억원 ($Y million)"
+    4. Tone: Professional but accessible. Explain technical terms simply.
+    5. Length: STRICTLY under 10 lines.
+    6. Ending: Add hashtags #{ticker} #진코바이오웍스 #바이오주 #미국주식
     
-    News Data:
+    News Data (last 10 days):
     {news_text}
     """
     
