@@ -2,8 +2,8 @@ name: X Curation Daily Post
 
 on:
   schedule:
-    # Runs at 16:00 UTC every day (01:00 AM KST)
-    - cron: '0 16 * * *'
+    # Runs at 03:30 UTC every day (12:30 PM KST)
+    - cron: '30 3 * * *'
   workflow_dispatch:  # Allows manual run from GitHub UI
 
 jobs:
