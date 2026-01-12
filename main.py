@@ -23,9 +23,9 @@ def main(ticker: str, dry_run: bool = False):
         return
 
     # 2. Summarize
-    # Check if Gemini API key exists
-    if not os.getenv("GEMINI_API_KEY"):
-        logger.error("GEMINI_API_KEY missing. Skipping summarization.")
+    # Check if xAI API key exists
+    if not os.getenv("XAI_API_KEY"):
+        logger.error("XAI_API_KEY missing. Skipping summarization.")
         return
         
     summary = summarize_news(news, ticker)

@@ -1,5 +1,5 @@
 import os
-from google import genai
+from openai import OpenAI
 import logging
 
 # Configure logging
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 def summarize_news(news_items: list, ticker: str) -> str:
     """
-    Summarizes a list of news items into a single X (Twitter) post using Gemini (New SDK).
+    Summarizes a list of news items into a single X (Twitter) post using Grok (xAI).
     
     Args:
         news_items (list): List of news dictionaries (title, link, published_at).
@@ -17,9 +17,9 @@ def summarize_news(news_items: list, ticker: str) -> str:
     Returns:
         str: The generated tweet content.
     """
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("XAI_API_KEY")
     if not api_key:
-        logger.error("GEMINI_API_KEY not found in environment variables.")
+        logger.error("XAI_API_KEY not found in environment variables.")
         return "Error: API Key missing."
 
     if not news_items:
@@ -47,25 +47,26 @@ def summarize_news(news_items: list, ticker: str) -> str:
     """
     
     try:
-        # Initialize Client with the new SDK
-        client = genai.Client(api_key=api_key)
-        
-        # Call the model
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt
+        # Initialize xAI client
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.x.ai/v1"
         )
-        return response.text
+        
+        # Call Grok
+        response = client.chat.completions.create(
+            model="grok-beta",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that summarizes stock news in Korean."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=500
+        )
+        
+        return response.choices[0].message.content
     except Exception as e:
-        logger.error(f"Error generating summary: {e}")
-        try:
-            logger.info("Attempting to list available models due to error...")
-            # List available models to debug 404
-            for m in client.models.list():
-                logger.info(f"Available model: {m.name}")
-        except Exception as list_e:
-            logger.error(f"Failed to list models: {list_e}")
-
+        logger.error(f"Error generating summary with Grok: {e}")
         return f"Error generating summary: {e}"
 
 if __name__ == "__main__":
