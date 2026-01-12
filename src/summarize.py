@@ -58,7 +58,7 @@ def summarize_news(news_items: list, ticker: str) -> str:
     
     7. Ending: 
        - Source attribution line
-       - Hashtags: #{ticker} #깅코바이오웍스 #바이오주 #미국주식
+       - Hashtags: #DNA #깅코바이오웍스
     
     News Data (last 10 days):
     {news_text}
