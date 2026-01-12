@@ -27,7 +27,7 @@ def summarize_news(news_items: list, ticker: str) -> str:
 
     # Prepare the input text
     news_text = ""
-    for idx, item in enumerate(news_items[:5]): # Limit to top 5
+    for idx, item in enumerate(news_items[:3]): # Limit to top 3 to save tokens
         news_text += f"{idx+1}. {item['title']} (Source: {item['publisher']})\n"
 
     prompt = f"""
@@ -36,11 +36,11 @@ def summarize_news(news_items: list, ticker: str) -> str:
     
     Requirements:
     1. Language: Korean.
-    2. Format: Headline followed by bullet points.
-    3. Currency: If any USD amounts are mentioned, convert them to KRW (keep USD in brackets). Assume 1 USD = 1,450 KRW.
+    2. Format: Headline followed by 3-4 bullet points max.
+    3. Currency: Convert USD to KRW (approx 1 USD = 1,450 KRW).
     4. Tone: Professional, informative, and concise.
-    5. Length: Keep it under 500 characters if possible (for a long tweet or thread).
-    6. Ending: Add hashtags like #{ticker} #주식 #미국주식.
+    5. Length: STRICTLY under 10 lines of text.
+    6. Ending: Add hashtags like #{ticker} #주식.
     
     News Data:
     {news_text}
@@ -52,7 +52,7 @@ def summarize_news(news_items: list, ticker: str) -> str:
         
         # Call the model
         response = client.models.generate_content(
-            model='gemini-2.0-flash-exp',
+            model='gemini-1.5-flash-001',
             contents=prompt
         )
         return response.text
@@ -61,7 +61,7 @@ def summarize_news(news_items: list, ticker: str) -> str:
         try:
             logger.info("Attempting to list available models due to error...")
             # List available models to debug 404
-            for m in client.models.list(config={'limit': 20}):
+            for m in client.models.list():
                 logger.info(f"Available model: {m.name}")
         except Exception as list_e:
             logger.error(f"Failed to list models: {list_e}")
