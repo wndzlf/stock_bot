@@ -1,14 +1,16 @@
-import yfinance as yf
+import feedparser
 import logging
+import urllib.parse
 from datetime import datetime, timedelta
+from time import mktime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 72) -> list:
+def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 24) -> list:
     """
-    Fetches news for a given stock ticker using yfinance.
+    Fetches news for a given stock ticker using Google News RSS.
     
     Args:
         ticker_symbol (str): The stock ticker (e.g., "DNA").
@@ -18,32 +20,38 @@ def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 72) -> list:
         list: A list of dictionaries containing news metadata.
     """
     try:
-        ticker = yf.Ticker(ticker_symbol)
-        news = ticker.news
+        # URL Encode the query
+        query = urllib.parse.quote(f"{ticker_symbol} stock")
         
-        if not news:
-            logger.info(f"No news found for {ticker_symbol}")
+        # Google News RSS URL (English, US)
+        # We fetch English news because it's more abundant for US stocks.
+        # The summarizer will translate it anyway.
+        rss_url = f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
+        
+        logger.info(f"Fetching RSS: {rss_url}")
+        feed = feedparser.parse(rss_url)
+        
+        if not feed.entries:
+            logger.info(f"No RSS entries found for {ticker_symbol}")
             return []
             
         filtered_news = []
-        # Calculate the cutoff time (current time - lookback period)
-        # Note: yfinance news usually returns a timestamp (seconds since epoch)
         cutoff_time = datetime.now() - timedelta(hours=lookback_hours)
         
-        for item in news:
-            # item.get('providerPublishTime') is a unix timestamp
-            pub_time = item.get('providerPublishTime')
-            if pub_time:
-                pub_dt = datetime.fromtimestamp(pub_time)
+        for entry in feed.entries:
+            # entry.published_parsed is a struct_time
+            if hasattr(entry, 'published_parsed'):
+                pub_dt = datetime.fromtimestamp(mktime(entry.published_parsed))
+                
                 if pub_dt > cutoff_time:
                     filtered_news.append({
-                        'title': item.get('title'),
-                        'link': item.get('link'),
-                        'publisher': item.get('publisher'),
+                        'title': entry.title,
+                        'link': entry.link,
+                        'publisher': entry.source.title if hasattr(entry, 'source') else 'Google News',
                         'published_at': pub_dt.strftime('%Y-%m-%d %H:%M:%S')
                     })
         
-        logger.info(f"Found {len(filtered_news)} items for {ticker_symbol} in the last {lookback_hours} hours.")
+        logger.info(f"Found {len(filtered_news)} items for {ticker_symbol} in the last {lookback_hours} hours via Google News.")
         return filtered_news
 
     except Exception as e:
@@ -52,6 +60,6 @@ def fetch_stock_news(ticker_symbol: str, lookback_hours: int = 72) -> list:
 
 if __name__ == "__main__":
     # Test run
-    results = fetch_stock_news("DNA")
+    results = fetch_stock_news("TSLA", lookback_hours=72)
     for news_item in results:
-        print(f"- {news_item['title']} ({news_item['publisher']})")
+        print(f"- {news_item['title']} ({news_item['published_at']})")
