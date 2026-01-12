@@ -34,6 +34,10 @@ def main(ticker: str, dry_run: bool = False):
     print(summary)
     print("-" * 40)
 
+    if summary.startswith("Error"):
+        logger.error("Summary generation failed. Skipping Twitter post.")
+        return
+
     # 3. Post to X
     if dry_run:
         logger.info("Dry run enabled. Skipping Twitter post.")

@@ -49,7 +49,7 @@ def summarize_news(news_items: list, ticker: str) -> str:
     """
     
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
