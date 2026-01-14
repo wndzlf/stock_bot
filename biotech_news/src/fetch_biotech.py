@@ -20,10 +20,9 @@ def fetch_biotech_news(lookback_hours: int = 24) -> list:
         list: 뉴스 항목 리스트 (title, summary, link, published_at).
     """
     rss_sources = [
-        {"name": "Fierce Biotech", "url": "https://www.fiercebiotech.com/rss/biotech-news"},
+        {"name": "Fierce Biotech", "url": "https://www.fiercebiotech.com/rss"},
         {"name": "BioPharma Dive", "url": "https://www.biopharmadive.com/feeds/news/"},
         {"name": "Endpoints News", "url": "https://endpts.com/feed"},
-        {"name": "BioSpace", "url": "https://www.biospace.com/feed"},
         {"name": "GEN (Genetic Engineering & Biotechnology News)", "url": "https://www.genengnews.com/feed"},
         {"name": "Nature Biotechnology", "url": "https://www.nature.com/nbt.rss"},
         {"name": "STAT News", "url": "https://www.statnews.com/feed/"}

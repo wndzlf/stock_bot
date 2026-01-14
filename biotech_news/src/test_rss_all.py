@@ -2,10 +2,9 @@ import requests
 import feedparser
 
 rss_sources = [
-    {"name": "Fierce Biotech", "url": "https://www.fiercebiotech.com/rss/biotech-news"},
+    {"name": "Fierce Biotech", "url": "https://www.fiercebiotech.com/rss"},
     {"name": "BioPharma Dive", "url": "https://www.biopharmadive.com/feeds/news/"},
     {"name": "Endpoints News", "url": "https://endpts.com/feed"},
-    {"name": "BioSpace", "url": "https://www.biospace.com/feed"},
     {"name": "GEN", "url": "https://www.genengnews.com/feed"},
     {"name": "Nature Biotechnology", "url": "https://www.nature.com/nbt.rss"},
     {"name": "STAT News", "url": "https://www.statnews.com/feed/"}
