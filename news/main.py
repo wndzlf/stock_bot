@@ -11,6 +11,7 @@ from src.post_tweet import post_to_x
 from news.src.fetch_news import fetch_stock_news
 from news.src.summarize import summarize_news
 from src.telegram_bot import send_to_telegram
+import html
 
 # Load environment variables from .env file for local development
 load_dotenv()
@@ -31,8 +32,10 @@ def main(ticker: str, dry_run: bool = False, hitl: bool = False):
         logger.info("HITL 모드 활성화: 텔레그램으로 뉴스 원문을 전송합니다.")
         raw_text = f"<b>[{ticker} 주식 뉴스 원문]</b>\n\n"
         for i, item in enumerate(news[:5]):
-            raw_text += f"{i+1}. {item['title']}\n"
-            raw_text += f"Link: {item['link']}\n\n"
+            title = html.escape(item['title'])
+            link = html.escape(item['link'])
+            raw_text += f"{i+1}. {title}\n"
+            raw_text += f"Link: {link}\n\n"
         
         raw_text += "위 내용을 복사하여 원하는 모델에서 요약본을 만든 후, 이 봇에게 답변으로 보내주세요."
         send_to_telegram(raw_text)
