@@ -32,4 +32,6 @@ jobs:
         X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
         X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
         X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
-      run: python news/main.py --ticker DNA
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: python news/main.py --ticker DNA --hitl
