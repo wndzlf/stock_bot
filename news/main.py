@@ -30,15 +30,40 @@ def main(ticker: str, dry_run: bool = False, hitl: bool = False):
 
     if hitl:
         logger.info("HITL 모드 활성화: 텔레그램으로 뉴스 원문을 전송합니다.")
-        raw_text = f"<b>[{ticker} 주식 뉴스 원문]</b>\n\n"
+        
+        # 뉴스 텍스트 생성
+        news_list_text = ""
         for i, item in enumerate(news[:5]):
             title = html.escape(item['title'])
             link = html.escape(item['link'])
-            raw_text += f"{i+1}. {title}\n"
-            raw_text += f"Link: {link}\n\n"
+            news_list_text += f"{i+1}. {title}\nLink: {link}\n\n"
         
-        raw_text += "위 내용을 복사하여 원하는 모델에서 요약본을 만든 후, 이 봇에게 답변으로 보내주세요."
-        send_to_telegram(raw_text)
+        # 프롬프트 템플릿 (summarize.py에서 가져옴)
+        prompt_template = f"""
+----------------------------------------
+[AI 프롬프트 시작]
+
+You are a professional stock market analyst writing for Korean retail investors.
+Summarize the following recent news for '{ticker}' into a concise X (Twitter) post in Korean.
+
+주제:
+{news_list_text}
+
+CRITICAL Requirements:
+1. Company Name: ALWAYS use "깅코바이오웍스" (NOT 진코바이오웍스)
+2. Source Attribution: At the end, ALWAYS add "출처: [언론사명]" for each major news item.
+3. Currency & Financial Impact: Convert ALL USD amounts to KRW (1 USD = 1,450 KRW). Format: "약 X억원 (약 $Y million)". ALWAYS explain the financial impact.
+4. Format: Catchy headline, 2-3 bullet points with investment insights. Focus on partnerships, financial results, products, regulatory news.
+5. Tone: Professional but accessible for retail investors.
+6. Length: STRICTLY under 10 lines.
+7. Ending: Source attribution line, Hashtags: #{ticker} #깅코바이오웍스
+
+[AI 프롬프트 끝]
+----------------------------------------
+위 내용을 전체 복사하여 GPT나 Claude 등에 넣고 답변을 받으세요. 
+그 후 받은 답변을 이 봇에게 다시 보내주시면 X에 포스팅됩니다!
+"""
+        send_to_telegram(prompt_template)
         logger.info("텔레그램 전송 완료. 프로그램을 종료합니다.")
         return
 
