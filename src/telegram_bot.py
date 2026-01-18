@@ -1,7 +1,6 @@
-import os
-import requests
 import logging
 import time
+import html
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +18,8 @@ def send_to_telegram(text: str):
         return False
         
     url = f"https://api.telegram.org/bot{token}/sendMessage"
+    
+    # Try sending with HTML first
     payload = {
         "chat_id": chat_id,
         "text": text,
@@ -27,11 +28,20 @@ def send_to_telegram(text: str):
     
     try:
         response = requests.post(url, json=payload, timeout=15)
+        if response.status_code == 400:
+            logger.warning("HTML 파싱 오류 가능성. 일반 텍스트로 다시 시도합니다.")
+            payload.pop("parse_mode")
+            # Remove basic tags if sending as plain text to avoid showing <b> etc.
+            payload["text"] = text.replace("<b>", "").replace("</b>", "").replace("<i>", "").replace("</i>", "")
+            response = requests.post(url, json=payload, timeout=15)
+            
         response.raise_for_status()
         logger.info("텔레그램 메시지 전송 성공")
         return True
     except Exception as e:
         logger.error(f"텔레그램 메시지 전송 실패: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+             logger.error(f"상세 오류 내용: {e.response.text}")
         return False
 
 def get_latest_telegram_reply(last_update_id=None):
