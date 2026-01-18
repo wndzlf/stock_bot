@@ -57,6 +57,7 @@ CRITICAL Requirements:
 5. Tone: Professional but accessible for retail investors.
 6. Length: STRICTLY under 10 lines.
 7. Ending: Source attribution line, Hashtags: #{ticker} #깅코바이오웍스
+8. 언어: 답변은 반드시 한국어(Korean)로 작성해줘.
 
 [AI 프롬프트 끝]
 ----------------------------------------
